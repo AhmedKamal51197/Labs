@@ -1,0 +1,56 @@
+(1)
+[ahmed@localhost html]$ sudo vi  /etc/httpd/conf.modules.d/00-mpm.conf
+#LoadModule mpm_event_module modules/mod_mpm_event.so
+LoadModule mpm_worker_module modules/mod_mpm_worker.so
+
+(2)
+[ahmed@localhost html]$ httpd -M | grep rewrite
+AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using localhost.localdomain. Set the 'ServerName' directive globally to suppress this message
+ rewrite_module (shared)
+(3)
+--------------
+a
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{QUERY_STRING} forbidden
+RewriteRule "^/page/(.*)$" - [F]
+#"/page1.html" [R]
+</IfModule>
+----------
+b
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{QUERY_STRING} hackerRank
+RewriteRule "^/page(.*)$" "page?"  [R]
+</IfModule>
+-----------
+c
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{QUERY_STRING} ^var=val$
+RewriteRule "^/page1$" "page2"  [R]
+</IfModule>
+------------
+d
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{QUERY_STRING} ^([^&]+)=([^&]+)$
+RewriteRule "^/path$" "path/%1/%2?"  [R]
+</IfModule>
+---------------
+e
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteRule "^example/(.*)/(.*)$" "/something.cgi?arg=$1&other=$2" [QSA]
+</IfModule>
+--------------
+h-
+<VirtualHost *:80>
+ServerAdmin root@localhost
+DocumentRoot /var/www/html/site1
+ServerName Os.iti.gov.eg
+ErrorLog logs/Os.iti.gov.eg-error_log
+CustomLog logs/Os.iti.gov.eg-access_log common
+</VirtualHost>
+and change /etc/hosts
+127.0.0.1 Os.iti.gov.eg
